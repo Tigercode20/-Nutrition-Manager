@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍎 Nutrition Manager</title>
+    <link rel="icon" type="image/png" href="Nutrition Manager icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <header class="app-header no-print">
+        <h1 class="app-title">🍎 Nutrition Manager</h1>
+        <h1 class="app-title">أستغفر الله </h1>
+    </header>
+    <div class="container">
+        <section class="input-section no-print">
+            <h2>📥 أدخل النظام الغذائي</h2>
+
+            <div class="ai-controls">
+                <div class="mode-toggles">
+                    <button class="mode-btn active" id="btnManual" onclick="setMode('manual')">✍️ Manual</button>
+                    <button class="mode-btn" id="btnAI" onclick="setMode('ai')">🤖 Auto</button>
+
+                    <button class="settings-btn" onclick="toggleSettings()" title="إعدادات API">⚙️</button>
+                </div>
+
+                <div id="aiSettings" class="ai-settings" style="display: none;">
+                    <input type="password" id="apiKey" placeholder="أدخل مفتاح Gemini API هنا" onchange="saveApiKey()"
+                        oncopy="return false;" oncut="return false;" onpaste="return true;"
+                        style="user-select: none; -webkit-user-select: none;">
+                </div>
+
+                <div id="aiInputContainer" style="display: none;">
+                    <label for="aiInputText"
+                        style="color: #00ff99; font-weight: bold; display: block; margin-bottom: 5px;">📝 بيانات العميل
+                        (الصق هنا):</label>
+                    <textarea id="aiInputText" class="ai-input-area"
+                        placeholder="أدخل استبيان العميل هنا..."></textarea>
+                    <button onclick="generateNutritionPlan()" class="generate-btn">✨ توليد النظام الغذائي (Generate)
+                        ✨</button>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button onclick="render()">تحديث المعاينة 🔄</button>
+                <button onclick="clearAll()" class="danger">مسح الكل 🗑️</button>
+                <button onclick="window.print()">طباعة / PDF 🖨️</button>
+            </div>
+            <textarea id="inputText" placeholder="الصق النظام الغذائي هنا..."></textarea>
+        </section>
+
+        <section class="input-section no-print" style="border-color: #00ff99;">
+            <h2>📄 دمج مع ملف PDF الرئيسي</h2>
+            <div class="controls" style="align-items: center; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="color: #a0aec0;">ملف PDF الرئيسي:</label>
+                    <div id="masterStatus" style="color: #00ff99; font-weight: bold;">جاري التحقق من الملف...</div>
+                    <input type="file" id="manualMasterPdf" accept="application/pdf"
+                        style="display: none; margin-top: 5px;" onchange="handleManualFile(this)">
+                    <button id="manualSelectBtn" onclick="document.getElementById('manualMasterPdf').click()"
+                        style="background: #3182ce; font-size: 0.9rem; padding: 5px 10px;">📂 اختر الملف
+                        يدوياً</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="insertPage" style="color: #a0aec0;">إدراج بعد الصفحة رقم:</label>
+                    <input type="number" id="insertPage" value="5"
+                        style="background: var(--input-bg); color: white; border: 1px solid var(--accent-color); padding: 8px; border-radius: 6px; width: 80px; text-align: center;">
+                </div>
+
+                <div style="margin-right: auto;">
+                    <button onclick="mergeAndDownload()"
+                        style="background: linear-gradient(45deg, #00ff99, #001e50); color: white; border-color: #00ff99;">
+                        دمج وتحميل الملف النهائي 🚀
+                    </button>
+                </div>
+            </div>
+            <a id="downloadLink" style="display:none;"></a>
+            <div id="msg" style="margin-top: 10px; font-weight: bold;"></div>
+        </section>
+
+        <section id="output" class="output-section">
+        </section>
+    </div>
+
+    <script src="bg_data.js"></script>
+    <script src="ai_prompt.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
