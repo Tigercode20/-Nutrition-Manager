@@ -22,6 +22,11 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     min-height: 100vh;
+    /* منع تحديد النصوص في الموقع ما عدا الكتابة */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* --- App Header --- */
@@ -115,6 +120,11 @@ textarea {
     line-height: 1.6;
     resize: vertical;
     transition: border-color 0.3s;
+    /* السماح بتحديد النصوص داخل مربعات الإدخال */
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 textarea:focus {

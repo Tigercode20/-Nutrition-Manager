@@ -685,3 +685,45 @@ async function previewBeforeAfter() {
 
     return baPage;
 }
+
+/* =========================================================
+   Security: Disable Inspection but Allow Input Interaction
+   ========================================================= */
+
+// 1. منع كليك يمين في كل الصفحة "ما عدا" حقول الكتابة
+document.addEventListener('contextmenu', function (e) {
+    // نتحقق من العنصر الذي تم الضغط عليه
+    var target = e.target;
+
+    // لو العنصر هو مربع إدخال نص أو منطقة نصية -> اسمح بالقائمة (عشان النسخ واللصق)
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return true;
+    }
+
+    // غير كده -> امنع القائمة
+    e.preventDefault();
+}, false);
+
+// 2. منع اختصارات لوحة المفاتيح الخاصة بالمطورين (F12, Ctrl+Shift+I, etc)
+document.onkeydown = function (e) {
+    // منع F12
+    if (e.keyCode == 123) {
+        return false;
+    }
+    // منع Ctrl+Shift+I (فتح التبويب Elements)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+        return false;
+    }
+    // منع Ctrl+Shift+J (فتح الكونسول)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+        return false;
+    }
+    // منع Ctrl+Shift+C (Inspect Element Cursor)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+        return false;
+    }
+    // منع Ctrl+U (عرض مصدر الصفحة)
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+        return false;
+    }
+}
