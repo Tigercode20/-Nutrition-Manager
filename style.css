@@ -472,6 +472,114 @@ button.danger:hover {
     }
 }
 
+/* --- Before/After Page Styles --- */
+.ba-page {
+    background-color: #01398c;
+    background-image: url('background.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    padding: 15mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ba-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    height: 100%;
+}
+
+.ba-client-name {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    text-align: center;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
+}
+
+.ba-images-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.ba-image-box {
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+    max-width: 45%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ba-image-box img {
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.ba-placeholder {
+    width: 100%;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+}
+
+.ba-label {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.ba-before {
+    color: #FFD700;
+    background: rgba(255, 215, 0, 0.2);
+}
+
+.ba-after {
+    color: #00ff99;
+    background: rgba(0, 255, 153, 0.2);
+}
+
+.ba-notes-section {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.ba-notes-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.ba-notes-box {
+    background: linear-gradient(135deg, rgba(1, 57, 140, 0.7), rgba(0, 255, 153, 0.05));
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 153, 0.3);
+    color: #e0e6ed;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
 /* --- Print Handling --- */
 @page {
     size: A4;

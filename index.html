@@ -54,6 +54,45 @@
             <textarea id="inputText" placeholder="الصق النظام الغذائي هنا..."></textarea>
         </section>
 
+        <!-- Before/After Section -->
+        <section class="input-section no-print" style="border-color: #FFD700;">
+            <h2>📸 Before & After</h2>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="color: #a0aec0;">اسم العميل:</label>
+                    <input type="text" id="clientName" placeholder="اكتب اسم العميل..."
+                        style="width: 100%; padding: 10px; background: var(--input-bg); color: white; border: 1px solid var(--accent-color); border-radius: 8px; margin-top: 5px;"
+                        onchange="previewBeforeAfter()">
+                </div>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="color: #FFD700; font-weight: bold;">صورة Before:</label>
+                        <input type="file" id="beforeImg" accept="image/*" onchange="previewBeforeAfter()"
+                            style="width: 100%; padding: 8px; background: var(--input-bg); color: white; border: 1px solid #666; border-radius: 6px; margin-top: 5px;">
+                        <input type="text" id="beforeText" placeholder="نص تحت Before (افتراضي: Before)"
+                            style="width: 100%; padding: 8px; background: var(--input-bg); color: white; border: 1px solid #666; border-radius: 6px; margin-top: 5px;"
+                            onchange="previewBeforeAfter()">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="color: #00ff99; font-weight: bold;">صورة After:</label>
+                        <input type="file" id="afterImg" accept="image/*" onchange="previewBeforeAfter()"
+                            style="width: 100%; padding: 8px; background: var(--input-bg); color: white; border: 1px solid #666; border-radius: 6px; margin-top: 5px;">
+                        <input type="text" id="afterText" placeholder="نص تحت After (افتراضي: After)"
+                            style="width: 100%; padding: 8px; background: var(--input-bg); color: white; border: 1px solid #666; border-radius: 6px; margin-top: 5px;"
+                            onchange="previewBeforeAfter()">
+                    </div>
+                </div>
+                <div>
+                    <label style="color: #a0aec0;">ملاحظات:</label>
+                    <textarea id="baNotesInput" placeholder="اكتب ملاحظاتك هنا..." onchange="previewBeforeAfter()"
+                        style="width: 100%; height: 80px; padding: 10px; background: var(--input-bg); color: white; border: 1px solid var(--accent-color); border-radius: 8px; margin-top: 5px;"></textarea>
+                </div>
+                <button onclick="previewBeforeAfter()"
+                    style="background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none;">تحديث
+                    معاينة Before/After 🔄</button>
+            </div>
+        </section>
+
         <section class="input-section no-print" style="border-color: #00ff99;">
             <h2>📄 دمج مع ملف PDF الرئيسي</h2>
             <div class="controls" style="align-items: center; flex-wrap: wrap;">

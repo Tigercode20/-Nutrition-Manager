@@ -277,6 +277,12 @@ async function handleManualFile(input) {
 async function mergeAndDownload() {
     render();
 
+    // Also render Before/After page if there's data
+    const hasBAData = $('clientName')?.value || $('beforeImg')?.files?.length || $('afterImg')?.files?.length;
+    if (hasBAData) {
+        await previewBeforeAfter();
+    }
+
     // Parse again to get client name for filename
     const text = document.getElementById('inputText').value;
     const data = parseDietPlan(text);
@@ -304,14 +310,19 @@ async function mergeAndDownload() {
     }
 
     const pagesContainer = document.getElementById('output');
-    const pages = pagesContainer.querySelectorAll('.page');
-    if (pages.length === 0) {
+    const allPages = pagesContainer.querySelectorAll('.page');
+    if (allPages.length === 0) {
         msgEl.textContent = '❌ لا توجد صفحات لدمجها!';
         msgEl.style.color = '#ff4d4d';
         return;
     }
 
-    msgEl.textContent = `⏳ جاري معالجة ${pages.length} صفحات...`;
+    // Separate Before/After page from other pages
+    const baPage = pagesContainer.querySelector('.ba-page');
+    const nutritionPages = Array.from(allPages).filter(p => !p.classList.contains('ba-page'));
+
+    const totalPages = (baPage ? 1 : 0) + nutritionPages.length;
+    msgEl.textContent = `⏳ جاري معالجة ${totalPages} صفحات...`;
     msgEl.style.color = '#ffcc00';
 
     try {
@@ -319,15 +330,13 @@ async function mergeAndDownload() {
         const pdfDoc = await PDFDocument.load(masterPdfBytes);
 
         const insertAfterPage = parseInt(document.getElementById('insertPage').value) || 5;
-        let insertIndex = insertAfterPage;
 
         const A4_WIDTH = 595.28;
         const A4_HEIGHT = 841.89;
         const bgDataUrl = (typeof BG_DATA !== 'undefined') ? BG_DATA : null;
 
-        for (let i = 0; i < pages.length; i++) {
-            const pageEl = pages[i];
-            const originalBg = getComputedStyle(pageEl).backgroundImage;
+        // Helper function to render a page to PDF
+        async function renderPageToPdf(pageEl, insertIndex) {
             if (bgDataUrl) {
                 pageEl.style.setProperty('background-image', `url("${bgDataUrl}")`, 'important');
             }
@@ -345,7 +354,7 @@ async function mergeAndDownload() {
                 pageEl.style.backgroundImage = '';
             }
 
-            const newPage = pdfDoc.insertPage(insertIndex + i, [A4_WIDTH, A4_HEIGHT]);
+            const newPage = pdfDoc.insertPage(insertIndex, [A4_WIDTH, A4_HEIGHT]);
 
             newPage.drawImage(imgImage, {
                 x: 0,
@@ -353,8 +362,25 @@ async function mergeAndDownload() {
                 width: A4_WIDTH,
                 height: A4_HEIGHT
             });
+        }
 
-            msgEl.textContent = `⏳ جاري معالجة صفحة ${i + 1}...`;
+        let processedCount = 0;
+
+        // 1. Insert Before/After page after page 1
+        if (baPage) {
+            await renderPageToPdf(baPage, 1); // Insert after page 1 (index 1)
+            processedCount++;
+            msgEl.textContent = `⏳ جاري معالجة صفحة ${processedCount}/${totalPages} (Before/After)...`;
+        }
+
+        // 2. Insert nutrition pages after the specified page (default: 5)
+        // Adjust insert index: if B&A was inserted, the page numbers shift by 1
+        let nutritionInsertIndex = insertAfterPage + (baPage ? 1 : 0);
+
+        for (let i = 0; i < nutritionPages.length; i++) {
+            await renderPageToPdf(nutritionPages[i], nutritionInsertIndex + i);
+            processedCount++;
+            msgEl.textContent = `⏳ جاري معالجة صفحة ${processedCount}/${totalPages}...`;
         }
 
         const pdfBytes = await pdfDoc.save();
@@ -578,4 +604,84 @@ async function generateNutritionPlan() {
         btn.innerText = originalText;
         btn.disabled = false;
     }
+}
+
+// --- Before/After Photo Comparison ---
+
+async function previewBeforeAfter() {
+    const output = $('output');
+    const clientName = $('clientName')?.value || '';
+    const beforeText = $('beforeText')?.value || 'Before';
+    const afterText = $('afterText')?.value || 'After';
+    const baNotes = $('baNotesInput')?.value || '';
+
+    const beforeInput = $('beforeImg');
+    const afterInput = $('afterImg');
+
+    // Check if Before/After page already exists
+    let baPage = document.querySelector('.ba-page');
+    if (!baPage) {
+        baPage = document.createElement('div');
+        baPage.className = 'page ba-page';
+        // Insert as first page
+        if (output.firstChild) {
+            output.insertBefore(baPage, output.firstChild);
+        } else {
+            output.appendChild(baPage);
+        }
+    }
+
+    // Get image data URLs
+    const getImageUrl = (input) => {
+        return new Promise((resolve) => {
+            if (input && input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                resolve('');
+            }
+        });
+    };
+
+    const [beforeUrl, afterUrl] = await Promise.all([getImageUrl(beforeInput), getImageUrl(afterInput)]);
+
+    baPage.innerHTML = `
+        <div class="ba-content">
+            <h2 class="ba-client-name">${clientName || 'اسم العميل'}</h2>
+            <div class="ba-images-row">
+                <div class="ba-image-box">
+                    ${afterUrl ? `<img src="${afterUrl}" alt="After">` : '<div class="ba-placeholder">After</div>'}
+                    <p class="ba-label ba-after">${afterText}</p>
+                </div>
+                <div class="ba-image-box">
+                    ${beforeUrl ? `<img src="${beforeUrl}" alt="Before">` : '<div class="ba-placeholder">Before</div>'}
+                    <p class="ba-label ba-before">${beforeText}</p>
+                </div>
+            </div>
+            ${baNotes ? `
+            <div class="ba-notes-section">
+                <h3>ملاحظات</h3>
+                <div class="ba-notes-box">${baNotes.replace(/\n/g, '<br>')}</div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    // Wait for images to load in DOM
+    const images = baPage.querySelectorAll('img');
+    if (images.length > 0) {
+        await Promise.all(Array.from(images).map(img => {
+            return new Promise(resolve => {
+                if (img.complete) {
+                    resolve();
+                } else {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                }
+            });
+        }));
+    }
+
+    return baPage;
 }
