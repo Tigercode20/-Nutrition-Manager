@@ -639,3 +639,41 @@ button.danger:hover {
         color: white !important;
     }
 }
+
+/* =========================================================
+   Custom Context Menu (القائمة المخصصة)
+   ========================================================= */
+.context-menu {
+    position: absolute;
+    z-index: 10000;
+    width: 160px;
+    background: #1a202c;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    padding: 5px 0;
+    overflow: hidden;
+    font-family: 'Cairo', sans-serif;
+}
+
+.context-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.context-menu li {
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.context-menu li:hover {
+    background: rgba(0, 255, 153, 0.2);
+    color: var(--accent-color);
+}

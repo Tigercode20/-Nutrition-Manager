@@ -687,24 +687,63 @@ async function previewBeforeAfter() {
 }
 
 /* =========================================================
-   Security: Disable Inspection but Allow Input Interaction
+   Custom Right-Click Menu (Copy/Cut/Paste ONLY)
    ========================================================= */
 
-// 1. منع كليك يمين في كل الصفحة "ما عدا" حقول الكتابة
+const menu = document.getElementById('customContextMenu');
+
+// 1. عند الضغط كليك يمين - إظهار القائمة المخصصة
 document.addEventListener('contextmenu', function (e) {
-    // نتحقق من العنصر الذي تم الضغط عليه
-    var target = e.target;
+    e.preventDefault(); // إلغاء قائمة المتصفح الأصلية
 
-    // لو العنصر هو مربع إدخال نص أو منطقة نصية -> اسمح بالقائمة (عشان النسخ واللصق)
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return true;
-    }
-
-    // غير كده -> امنع القائمة
-    e.preventDefault();
+    // تحديد مكان القائمة بناءً على مكان الماوس
+    menu.style.display = 'block';
+    menu.style.left = e.pageX + 'px';
+    menu.style.top = e.pageY + 'px';
 }, false);
 
-// 2. منع اختصارات لوحة المفاتيح الخاصة بالمطورين (F12, Ctrl+Shift+I, etc)
+// 2. عند الضغط في أي مكان آخر (لإخفاء القائمة)
+document.addEventListener('click', function (e) {
+    menu.style.display = 'none';
+});
+
+// 3. تنفيذ الأوامر (قص، نسخ، لصق)
+async function execCommand(command) {
+    // نخفي القائمة الأول
+    menu.style.display = 'none';
+
+    try {
+        if (command === 'copy') {
+            // نسخ النص المحدد
+            const selectedText = window.getSelection().toString();
+            await navigator.clipboard.writeText(selectedText);
+        }
+        else if (command === 'cut') {
+            // قص النص (بيحتاج إننا نكون داخل Input)
+            document.execCommand('cut');
+        }
+        else if (command === 'paste') {
+            // اللصق
+            const text = await navigator.clipboard.readText();
+            // نضع النص في المكان اللي الماوس واقف عليه لو كان Input
+            if (document.activeElement &&
+                (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT')) {
+
+                const start = document.activeElement.selectionStart;
+                const end = document.activeElement.selectionEnd;
+                const val = document.activeElement.value;
+
+                // دمج النص الجديد مع القديم
+                document.activeElement.value = val.slice(0, start) + text + val.slice(end);
+            }
+        }
+    } catch (err) {
+        console.error('فشل تنفيذ الأمر: ', err);
+        alert('⚠️ المتصفح يرفض الوصول للحافظة (Clipboard) لأسباب أمنية.');
+    }
+}
+
+// 4. منع اختصارات لوحة المفاتيح الخاصة بالمطورين (F12, Ctrl+Shift+I, etc)
 document.onkeydown = function (e) {
     // منع F12
     if (e.keyCode == 123) {

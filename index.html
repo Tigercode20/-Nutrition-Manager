@@ -108,7 +108,7 @@
 
                 <div style="display: flex; flex-direction: column; gap: 5px;">
                     <label for="insertPage" style="color: #a0aec0;">إدراج بعد الصفحة رقم:</label>
-                    <input type="number" id="insertPage" value="5"
+                    <input type="number" id="insertPage" value="4"
                         style="background: var(--input-bg); color: white; border: 1px solid var(--accent-color); padding: 8px; border-radius: 6px; width: 80px; text-align: center;">
                 </div>
 
@@ -125,6 +125,15 @@
 
         <section id="output" class="output-section">
         </section>
+    </div>
+
+    <!-- Custom Context Menu -->
+    <div id="customContextMenu" class="context-menu" style="display: none;">
+        <ul>
+            <li onclick="execCommand('cut')">✂️ Cut (قص)</li>
+            <li onclick="execCommand('copy')">📋 Copy (نسخ)</li>
+            <li onclick="execCommand('paste')">📥 Paste (لصق)</li>
+        </ul>
     </div>
 
     <script src="bg_data.js"></script>
